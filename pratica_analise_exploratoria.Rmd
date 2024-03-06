@@ -1,0 +1,80 @@
+```{r}
+#importa dados, string vazio como NA, string como fatores
+dados = read.csv("tempo.csv", sep = ";", na.strings="", stringsAsFactors=T)
+head(dados)
+dados
+```
+
+```{r}
+# Buscando dados duplicados
+dados_duplicados =  dados[duplicated(dados$Id),]
+dados_duplicados
+```
+
+```{r}
+# Explorar Dados, colunas categóricas:
+
+# Vento
+counts = table(dados$Vento)
+barplot(counts, main="Ventos", xlab="Vento")
+
+# Jogar
+counts = table(dados$Jogar)
+barplot(counts, main="Jogar", xlab="Jogar")
+
+# Aparencia
+counts = table(dados$Aparencia)
+barplot(counts, main="Aparencia", xlab="Aparencia")
+
+# Colunas numéricas:
+
+# Temperatura
+summary(dados$Temperatura)
+boxplot(dados$Temperatura)
+hist(dados$Temperatura)
+
+# Umidade
+summary(dados$Umidade)
+boxplot(dados$Umidade)
+hist(dados$Umidade)
+
+# Valore faltantes - NAs
+dados[!complete.cases(dados),]
+```
+
+```{r}
+# Tratamento dos dados:
+
+# Temperatura
+mediana <- median(dados$Temperatura)
+dados[dados$Temperatura < -130 | dados$Temperatura > 130, "Temperatura"] <- mediana
+dados[dados$Temperatura < -130 | dados$Temperatura > 130, "Temperatura"]
+summary(dados$Temperatura)
+
+# Umidade
+mediana <- median(dados$Umidade, na.rm = TRUE)
+dados$Umidade <- ifelse(is.na(dados$Umidade), mediana, dados$Umidade)
+mediana <- median(dados$Umidade)
+dados[dados$Umidade < 0 | dados$Umidade > 100, "Umidade"] <- mediana
+dados[dados$Umidade < -100 | dados$Umidade > 100, "Umidade"]
+summary(dados$Umidade)
+
+# Aparencia
+dados[!dados$Aparencia %in% c("chuva","sol","nublado"),]$Aparencia = "sol"
+dados$Aparencia = factor(dados$Aparencia)
+summary(dados$Aparencia)
+
+# Vento
+dados$Vento[is.na(dados$Vento)] <- "FALSO"
+summary(dados$Vento)
+
+# Jogar
+summary(dados$Jogar)
+```
+
+```{r}
+# Conferindo novamente os dados:
+dados[!complete.cases(dados),]
+summary(dados)
+dados
+```
